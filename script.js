@@ -1,7 +1,7 @@
 /**
  * Exercice : Mini Pokédex
- * @author Steve Fallet <steve.fallet@dvitec.ch>
- * @since 2024-09-01
+ * @author Leonardo Varela <steve.fallet@dvitec.ch>
+ * @since 2026-10-08
  */
 
 'use strict';
@@ -59,11 +59,44 @@ function displayPokemons (listePokemons = pokemons) {
         pokemonCont.innerHTML = '<p>Dracaufeu a tout brûlé, aucun Pokémon ne correspond à ta recherche !</p>';
     }
 
-    for(const pokemon of pokemons) {
-        const types = pokemon.type.split(",");
-        const typesHTML = types.map(type => `<small>${type}</small>`).join(" ");
-        pokemonCont.innerHTML += `<p>${pokemon.name} ${typesHTML}</p>`;
+    for(const pokemon of listePokemons) {
+        pokemonCont.innerHTML += generatePokemonCardHTML(pokemon);
     }
 }
 
+function generatePokemonCardHTML(pokemon) {
+    const types = pokemon.type.split(",").map(type => type.trim());
+
+    const color1 = typeColors[types[0]] || DEFAULT_COLOR;
+    const color2 = typeColors[types[1]] || DEFAULT_COLOR;
+
+    const bgColor = types.length === 2
+        ? `linear-gradient(to right, ${color1} 50%, ${color2} 50%)`
+        : color1;
+
+    return `
+    <div class="pokemon-card" style="background: ${bgColor};">
+      <img src="images/${pokemon.img}" alt="${pokemon.name}">
+      <h2>${pokemon.name}</h2>
+      <div>Type: ${types.join(", ")}</div>
+      <div>Niveau: ${pokemon.level}</div>
+    </div>
+  `;
+}
+
+
+const searchBar = document.getElementById("search-bar");
+
+function filterAndSortPokemons() {
+    const recherche = searchBar.value.toLowerCase()
+
+    const pokemonFiltres = pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(recherche));
+    displayPokemons(pokemonFiltres);
+
+}
+
+searchBar.addEventListener('input', filterAndSortPokemons);
+
 displayPokemons()
+
+filterAndSortPokemons()
