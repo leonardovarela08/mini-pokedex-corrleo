@@ -86,16 +86,54 @@ function generatePokemonCardHTML(pokemon) {
 
 
 const searchBar = document.getElementById("search-bar");
+const typeFilter = document.getElementById("type-filter");
+const sortOrder = document.getElementById("sort-order");
 
 function filterAndSortPokemons() {
-    const recherche = searchBar.value.toLowerCase()
+    const recherche = searchBar.value.toLowerCase();
+    const typeChoisi = typeFilter.value;
+    const ordre = sortOrder.value;
 
-    const pokemonFiltres = pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(recherche));
+    let pokemonFiltres = pokemons.filter(pokemon =>
+        pokemon.name.toLowerCase().includes(recherche)
+    );
+
+    if (typeChoisi !== "") {
+        pokemonFiltres = pokemonFiltres.filter(pokemon =>
+            pokemon.type
+                .split(",")
+                .map(type => type.trim())
+                .includes(typeChoisi)
+        );
+    }
+
+    // Trier les Pokémon déjà filtrés
+    pokemonFiltres.sort((a, b) => {
+        switch (ordre) {
+            case "name-asc":
+                return a.name.localeCompare(b.name);
+
+            case "name-desc":
+                return b.name.localeCompare(a.name);
+
+            case "level-asc":
+                return a.level - b.level;
+
+            case "level-desc":
+                return b.level - a.level;
+
+            default:
+                return 0;
+        }
+    });
+
     displayPokemons(pokemonFiltres);
-
 }
 
+
 searchBar.addEventListener('input', filterAndSortPokemons);
+typeFilter.addEventListener('change', filterAndSortPokemons)
+sortOrder.addEventListener('change', filterAndSortPokemons);
 
 displayPokemons()
 
